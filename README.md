@@ -156,6 +156,20 @@ Update your `AndroidManifest.xml` to define activity aliases for alternate icons
 > **Notes:**
 > - `android:enabled="false"` keeps alternate icons disabled until activated.
 > - `android:targetActivity` must always point to `.MainActivity`.
+> - If your project uses an applicationIdSuffix or a custom setup, you may need to specify the fully qualified class name in android:name.
+
+```xml
+<activity-alias
+        android:name="${applicationId}.AppIconDart"
+        android:enabled="false"
+        android:icon="@mipmap/ic_launcher_dart"
+        android:targetActivity=".MainActivity">
+        <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+</activity-alias>
+```
 
 ---
 
