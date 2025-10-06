@@ -1,207 +1,286 @@
-# Flutter Dynamic Launcher Icon
+# flutter_dynamic_launcher_icon
 
-A Flutter package to **change your app’s launcher icon dynamically** at runtime on Android and iOS.
+[![pub version](https://img.shields.io/pub/v/flutter_dynamic_launcher_icon.svg)](https://pub.dev/packages/flutter_dynamic_launcher_icon) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
----
+## A Lightweight Flutter Plugin for Dynamic Launcher Icons
 
-## 📌 Features
+A lightweight Flutter plugin that lets you dynamically change your app's launcher icon at runtime — with full Android and iOS support.
 
-* Change launcher icons dynamically without restarting the app.
-* Supports multiple icons.
-* Works for both Android and iOS.
-* Simple and clean API.
+![Plugin Demo](screenshots/demo.gif)
 
 ---
 
-## 🚀 Installation
+### 📱 Platform Behavior
 
-Add this to your `pubspec.yaml`:
+#### Android Icon Change Behavior
+
+On Android, icon changes work differently than iOS to ensure a smooth user experience:
+
+- **Deferred Icon Application**:
+        - When you call `changeIcon()`, the request is saved but not immediately applied.
+        - The icon change is deferred until the app goes to the background (e.g., when the user presses home or switches apps).
+        - This prevents the app from being killed while the user is actively using it.
+
+- **Why This Approach?**:
+        - Android requires disabling/enabling components to change icons, which can cause app restarts.
+        - Immediate changes would interrupt the user's current session.
+        - By waiting for the background state, the change happens at a natural transition point.
+
+---
+
+#### iOS Icon Change Behavior
+
+iOS provides native support for alternate icons with a smooth, immediate experience:
+
+- **Instant Application**:
+        - Icon changes apply immediately when `changeIcon()` is called.
+        - Uses iOS's native `UIApplication.shared.setAlternateIconName()` API.
+        - Available on iOS 10.3+.
+
+---
+
+## Table of Contents
+
+- [Android Setup](#android-setup)
+- [iOS Setup](#ios-setup)
+- [Usage](#usage)
+- [API Reference](#api-reference)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## 🧩 Android Setup
+
+### 🔧 Installation
+
+Add the dependency to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  flutter_dynamic_launcher_icon:
-    git:
-      url: https://github.com/your-repo/flutter_dynamic_launcher_icon.git
+  flutter_dynamic_launcher_icon: ^<latest_version>
 ```
 
-Run:
+Fetch the packages:
 
 ```bash
 flutter pub get
 ```
 
----
+### 🧹 Clean & Full Restart
 
-## ⚙ Android Setup
+Since this plugin includes native Android code, perform a clean build and fully restart the app:
 
-Android requires special manifest configuration using `activity-alias`.
-
-### Step 1 — Remove LAUNCHER intent from MainActivity
-
-Open `android/app/src/main/AndroidManifest.xml` and locate your `MainActivity` entry. Remove the following block:
-
-```xml
-<intent-filter>
-    <action android:name="android.intent.action.MAIN"/>
-    <category android:name="android.intent.category.LAUNCHER"/>
-</intent-filter>
+```bash
+flutter clean
+flutter pub get
+flutter run
 ```
 
-After removal, your `MainActivity` should look like:
 
-```xml
-<activity
-    android:name=".MainActivity"
-    android:exported="true"
-    android:launchMode="singleTop"
-    android:theme="@style/LaunchTheme">
-    <meta-data
-        android:name="io.flutter.embedding.android.NormalTheme"
-        android:resource="@style/NormalTheme" />
-</activity>
+### 🖼️ Add Launcher Icons
+
+Place your launcher icon image files inside the `res/mipmap` folders:
+
+```plaintext
+android/app/src/main/res/
+  ├─ mipmap-mdpi/
+  ├─ mipmap-hdpi/
+  ├─ mipmap-xhdpi/
+  ├─ mipmap-xxhdpi/
+  └─ mipmap-xxxhdpi/
 ```
 
-### Step 2 — Add `activity-alias` entries
+Example filenames:
 
-For each icon variant, add an alias in `AndroidManifest.xml` inside the `<application>` tag:
+```plaintext
+mipmap-mdpi/ic_launcher_dart.png
+mipmap-hdpi/ic_launcher_dart.png
+mipmap-xhdpi/ic_launcher_dart.png
+mipmap-xxhdpi/ic_launcher_dart.png
+mipmap-xxxhdpi/ic_launcher_dart.png
+```
+
+Repeat this for all alternate icons you want to use.
+
+### 🧾 AndroidManifest.xml Setup
+
+Update your `AndroidManifest.xml` to define activity aliases for alternate icons:
 
 ```xml
-<activity-alias
-    android:name=".default"
-    android:enabled="true"
-    android:exported="true"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.example.app">
+
+  <application
     android:icon="@mipmap/ic_launcher"
-    android:roundIcon="@mipmap/ic_launcher"
-    android:targetActivity=".MainActivity">
-    <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-    </intent-filter>
-</activity-alias>
+    android:label="My App">
 
-<activity-alias
-    android:name=".icon_1"
-    android:enabled="false"
-    android:exported="true"
-    android:icon="@mipmap/ic_launcher_2"
-    android:roundIcon="@mipmap/ic_launcher_2"
-    android:targetActivity=".MainActivity">
-    <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-    </intent-filter>
-</activity-alias>
+    <activity
+      android:name=".MainActivity"
+      android:exported="true"
+      android:launchMode="singleTop"
+      android:theme="@style/LaunchTheme">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+
+    <!-- Alternate Icon 1 -->
+    <activity-alias
+      android:name=".AppIconDart"
+      android:enabled="false"
+      android:icon="@mipmap/ic_launcher_dart"
+      android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity-alias>
+
+    <!-- Alternate Icon 2 -->
+    <activity-alias
+      android:name=".AppIconSwift"
+      android:enabled="false"
+      android:icon="@mipmap/ic_launcher_swift"
+      android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity-alias>
+  </application>
+</manifest>
 ```
 
-Only one alias can have `android:enabled="true"`. Changing the enabled alias changes the launcher icon.
-
-### Step 3 — Add icon files
-
-Put your icons in:
-
-```
-android/app/src/main/res/mipmap-<density>/
-```
-
-Example:
-
-```
-mipmap-hdpi/ic_launcher_2.png
-mipmap-mdpi/ic_launcher_2.png
-mipmap-xhdpi/ic_launcher_2.png
-```
-
-Each alias in the manifest should match the icon name.
+> **Notes:**
+> - `android:enabled="false"` keeps alternate icons disabled until activated.
+> - `android:targetActivity` must always point to `.MainActivity`.
 
 ---
 
-## 🍏 iOS Setup
+## 🍎 iOS Setup
 
-### Step 1 — Add alternate icons
+### 🧭 Steps in Xcode
 
-Add icons to:
+1. Open the `ios/Runner` project in Xcode.
+2. Navigate to **Assets.xcassets** and create a new folder: **App Icons → New iOS App Icon**.
+3. Add your alternate icons (e.g., `AppIconDart`, `AppIconSwift`) in the asset catalog.
 
-```
-ios/Runner/Assets.xcassets/
-```
+![App Icon Folder in Xcode](screenshots/xcode_asset_catalog.png)
 
-For each alternate icon, create an `.appiconset` folder. Example:
 
-```
-Icon1.appiconset/
-```
+4. Go to **Runner → Build Settings** and search for "Alternate App Icon Sets."
+5. Add the names of your alternate icons.
 
-This folder should include all icon sizes with correct naming.
 
-### Step 2 — Add entries to `Info.plist`
+![Alternate App Icon Setup](screenshots/build_settings_alternate_icon.png)
 
-Edit `ios/Runner/Info.plist`:
 
-```xml
-<key>CFBundleIcons</key>
-<dict>
-    <key>CFBundlePrimaryIcon</key>
-    <dict>
-        <key>CFBundleIconFiles</key>
-        <array>
-            <string>AppIcon</string>
-        </array>
-        <key>UIPrerenderedIcon</key>
-        <false/>
-    </dict>
-    <key>CFBundleAlternateIcons</key>
-    <dict>
-        <key>Icon1</key>
-        <dict>
-            <key>CFBundleIconFiles</key>
-            <array>
-                <string>Icon1</string>
-            </array>
-            <key>UIPrerenderedIcon</key>
-            <false/>
-        </dict>
-    </dict>
-</dict>
-```
-
-Replace "Icon1" with the alternate icon name.
+> **Notes:**
+> - Ensure the names in "Alternate App Icon Sets" match the icon set folder names.
 
 ---
 
-## 💻 Usage
+## 🚀 Usage
 
-### Change icon
+### 📦 Import
 
 ```dart
 import 'package:flutter_dynamic_launcher_icon/flutter_dynamic_launcher_icon.dart';
-
-await FlutterDynamicLauncherIcon.changeIcon("icon_1");
 ```
 
-### Reset to default
+### 🎯 Change App Icon
+
+To switch icons:
+
+```dart
+await FlutterDynamicLauncherIcon.changeIcon('AppIconDart');
+```
+
+To reset to the default icon:
 
 ```dart
 await FlutterDynamicLauncherIcon.changeIcon(null);
 ```
 
+### ⚙️ Example
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_dynamic_launcher_icon/flutter_dynamic_launcher_icon.dart';
+
+class IconSwitcherExample extends StatefulWidget {
+  @override
+  _IconSwitcherExampleState createState() => _IconSwitcherExampleState();
+}
+
+class _IconSwitcherExampleState extends State<IconSwitcherExample> {
+  String? _currentIcon;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentIcon();
+  }
+
+  Future<void> _loadCurrentIcon() async {
+    final icon = await FlutterDynamicLauncherIcon.alternateIconName;
+    setState(() => _currentIcon = icon);
+  }
+
+  Future<void> _changeIcon(String? iconName) async {
+    await FlutterDynamicLauncherIcon.changeIcon(iconName);
+    await _loadCurrentIcon();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Dynamic Icon Example')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Current Icon: ${_currentIcon ?? "Default"}'),
+            ElevatedButton(
+              onPressed: () => _changeIcon('AppIconDart'),
+              child: Text('Switch to Dart Icon'),
+            ),
+            ElevatedButton(
+              onPressed: () => _changeIcon('AppIconSwift'),
+              child: Text('Switch to Swift Icon'),
+            ),
+            ElevatedButton(
+              onPressed: () => _changeIcon(null),
+              child: Text('Reset to Default'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
 ---
 
-## ⚠️ Notes
+## 🧩 API Reference
 
-* **Android**: Only one alias can be enabled at a time.
-* **iOS**: Changing icons prompts the user for confirmation.
-* **iOS**: Alternate icons must be declared in `Info.plist` and bundled with the app.
-* **Android**: Removing the LAUNCHER intent from MainActivity is required.
-
----
-
-## 📚 References
-
-* [Android activity-alias documentation](https://developer.android.com/guide/topics/manifest/activity-alias-element)
-* [iOS alternate icons documentation](https://developer.apple.com/documentation/uikit/uiapplication/1623094-setalternateiconname)
+| Method | Description |
+|--------|-------------|
+| `changeIcon(String? iconName, {bool silent})` | Changes the launcher icon dynamically. Pass `null` to reset. |
+| `alternateIconName` | Returns the currently active icon name, or `null` if using the default icon. |
+| `isSupported` | Returns `true` if the platform supports dynamic icons. |
 
 ---
 
-## 🛠 License
+## 🤝 Contributing
 
-MIT © [Your Name]
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).
