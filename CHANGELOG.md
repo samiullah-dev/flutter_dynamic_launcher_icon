@@ -1,3 +1,5 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+- Initial release of **flutter_dynamic_launcher_icon**.
+- Added support for dynamically changing the app launcher icon on **Android** and **iOS**.
+- Provided a simple API for setting and resetting the app icon at runtime.
