@@ -6,8 +6,6 @@
 
 A lightweight Flutter plugin that lets you dynamically change your app's launcher icon at runtime — with full Android and iOS support.
 
-![Plugin Demo](screenshots/demo.gif)
-
 ---
 
 ### 📱 Platform Behavior
