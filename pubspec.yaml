@@ -27,3 +27,7 @@ flutter:
         pluginClass: FlutterDynamicLauncherIconPlugin
       ios:
         pluginClass: FlutterDynamicLauncherIconPlugin
+
+screenshots:
+  - description: "iOS dynamic icon change demo"
+    path: screenshots/demo.gif
