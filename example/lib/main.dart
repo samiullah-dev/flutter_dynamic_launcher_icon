@@ -20,7 +20,6 @@ class DynamicIconDemoApp extends StatefulWidget {
 class _DynamicIconDemoAppState extends State<DynamicIconDemoApp> {
   String? _currentIcon;
   bool _isSupported = false;
-  bool _isLoading = true;
 
   @override
   void initState() {
@@ -35,21 +34,17 @@ class _DynamicIconDemoAppState extends State<DynamicIconDemoApp> {
     setState(() {
       _isSupported = supported;
       _currentIcon = current;
-      _isLoading = false;
     });
   }
 
   Future<void> _changeIcon(String? iconName, {bool silent = false}) async {
-    setState(() => _isLoading = true);
     try {
       await FlutterDynamicLauncherIcon.changeIcon(iconName, silent: silent);
       final updatedIcon = await FlutterDynamicLauncherIcon.alternateIconName;
       setState(() => _currentIcon = updatedIcon);
     } catch (e) {
       _showErrorDialog(e.toString());
-    } finally {
-      setState(() => _isLoading = false);
-    }
+    } finally {}
   }
 
   void _showErrorDialog(String message) {
@@ -72,9 +67,7 @@ class _DynamicIconDemoAppState extends State<DynamicIconDemoApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Dynamic Launcher Icon Demo')),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : !_isSupported
+      body: !_isSupported
           ? const Center(
               child: Text(
                 'Dynamic icons are not supported on this device.',
@@ -100,7 +93,7 @@ class _DynamicIconDemoAppState extends State<DynamicIconDemoApp> {
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.phone_iphone),
-                    label: const Text('Switch to Swift Icon'),
+                    label: const Text('Switch to Swift Icon (Silent)'),
                     onPressed: () => _changeIcon(
                       AppAlternateIcon.swift.name,
                       // Warning: Using silent may violate App Store guidelines.
