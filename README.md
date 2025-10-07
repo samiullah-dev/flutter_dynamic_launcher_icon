@@ -8,6 +8,11 @@ A lightweight Flutter plugin that lets you dynamically change your app's launche
 
 ---
 
+## 🎬 Demo
+
+![Demo of dynamic app icon change](screenshots/demo.gif)
+
+
 ### 📱 Platform Behavior
 
 #### Android Icon Change Behavior
