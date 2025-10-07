@@ -1,4 +1,4 @@
-import 'flutter_dynamic_launcher_icon_platform_interface.dart';
+import 'src/flutter_dynamic_launcher_icon_platform_interface.dart';
 
 /// A Flutter plugin for dynamically changing the app launcher icon at runtime.
 ///

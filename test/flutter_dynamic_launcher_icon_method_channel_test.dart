@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_dynamic_launcher_icon/flutter_dynamic_launcher_icon_method_channel.dart';
+import 'package:flutter_dynamic_launcher_icon/src/flutter_dynamic_launcher_icon_method_channel.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

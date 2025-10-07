@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dynamic_launcher_icon/flutter_dynamic_launcher_icon.dart';
-import 'package:flutter_dynamic_launcher_icon/flutter_dynamic_launcher_icon_platform_interface.dart';
-import 'package:flutter_dynamic_launcher_icon/flutter_dynamic_launcher_icon_method_channel.dart';
+import 'package:flutter_dynamic_launcher_icon/src/flutter_dynamic_launcher_icon_platform_interface.dart';
+import 'package:flutter_dynamic_launcher_icon/src/flutter_dynamic_launcher_icon_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class MockFlutterDynamicLauncherIconPlatform
